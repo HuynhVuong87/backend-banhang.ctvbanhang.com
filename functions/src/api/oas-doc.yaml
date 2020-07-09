@@ -1,0 +1,2147 @@
+openapi: 3.0.0
+info:
+  title: Gom Don API
+  description: Gom Don API.
+  version: "1.0"
+  contact:
+    name: "Huynh Nhọn"
+    email: "huynhnhon.dev@gmail.com"
+paths:
+  /buy:
+    post:
+      x-swagger-router-controller: buyRoute
+      operationId: createBuy
+      tags:
+        - /buy
+      description: CTVmua tạo một đơn mua trên 1688. Thông tin chung của đơn mua được lưu tại bảng buys. Thông tin về các phân loại được mua được lưu tại bảng buyModels
+      summary: Tạo đơn nhập
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BuyCreate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+    put:
+      x-swagger-router-controller: buyRoute
+      operationId: updateBuy
+      tags:
+        - /buy
+      description: Cập nhật thông tin chung của đơn mua (Thông tin trong bảng buys)
+      summary: Cập nhật đơn mua
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BuyUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /buy/get-by-ids:
+    get:
+      x-swagger-router-controller: buyRoute
+      operationId: getByIdsBuy
+      description: Xem đơn mua theo danh sách id
+      summary: get buy by array id
+      tags:
+        - /buy
+      parameters:
+        - in: query
+          name: ids
+          description: Là mảng bắt buộc. Mỗi phần tử trong mảng là id của đơn mua được lấy trên 1688
+          required: true
+          schema:
+            uniqueItems: true
+            type: string
+            items:
+              type: string
+              maxItems: 40
+              minItems: 1
+          explode: false
+          style: form
+        - in: query
+          name: fields
+          description: Không bắt buộc. Mỗi phần tử trong mảng là tên của thuộc tính muốn xem. Sẽ không trả về thông tin nếu mảng trống. Nếu không gửi mảng lên server sẽ lấy về thông tin đầy đủ
+          schema:
+            uniqueItems: true
+            type: string
+            items:
+              type: string
+          explode: false
+          style: form
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponsesWithArrayData"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /buy/get-all:
+    get:
+      x-swagger-router-controller: buyRoute
+      operationId: getAll
+      description: Xem danh sách đơn mua theo trạng thái và id của quanlyCTVmua
+      summary: Xem danh sách đơn mua theo trạng thái
+      tags:
+        - /buy
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /buy/get-by-status:
+    get:
+      x-swagger-router-controller: buyRoute
+      operationId: getByStatusBuy
+      description: Xem danh sách đơn mua theo trạng thái và id của quanlyCTVmua
+      summary: Xem danh sách đơn mua theo trạng thái
+      tags:
+        - /buy
+      parameters:
+        - in: query
+          name: status
+          schema:
+            uniqueItems: true
+            type: string
+            items:
+              type: number
+          allowEmptyValue: false
+          required: true
+          style: form
+          explode: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /buy-model/gomdon-buy-id/{gomdon_buy_id}:
+    get:
+      x-swagger-router-controller: buyModelRouter
+      operationId: getModelOfBuy
+      tags:
+        - /buy-model
+      description: Xem toàn bộ buyModel của một đơn mua
+      parameters:
+        - in: path
+          required: true
+          name: gomdon_buy_id
+          description: gomdon_buy_id là id document của đơn mua
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /buy-model:
+    put:
+      x-swagger-router-controller: buyModelRouter
+      operationId: updateBuyModel
+      tags:
+        - /buy-model
+      description: Cập nhật thông tin phân loại của đơn mua
+      summary: Cập nhật thông tin phân loại của đơn mua
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BuyModelUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /product:
+    post:
+      x-swagger-router-controller: productRoute
+      operationId: createProduct
+      tags:
+        - /product
+      description: Thêm một sản phẩm mới. Cùng một sản phẩm có thể được thêm từ 2 nhân viên khác nhau. Tức một sản phẩm được định nghĩa dựa trên id sản phẩm và id nhân viên (gomdon_id, gomdon_by)
+      summary: Thêm sản phẩm mới
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+    put:
+      x-swagger-router-controller: productRoute
+      operationId: updateProduct
+      tags:
+        - /product
+      description: API này dùng để cập nhật sản phẩm. Lưu ý classify của sản phẩm được sẽ thay mới hoàn toàn nếu Dữ liệu gửi lên có classify
+      summary: Cập nhật sản phầm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /product/delete/{product_id}:
+    get:
+      x-swagger-router-controller: productRoute
+      operationId: deleteProduct
+      tags:
+        - /product
+      description: API này dùng để xóa sản phẩm
+      parameters:
+        - in: path
+          required: true
+          name: product_id
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /product/get-all:
+    get:
+      x-swagger-router-controller: productRoute
+      operationId: getAllProduct
+      tags:
+        - /product
+      description: Xem tất cả sản phẩm
+      summary: Xem tất cả sản phẩmm
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /product/get-by-ids:
+    get:
+      x-swagger-router-controller: productRoute
+      operationId: getByIds
+      tags:
+        - /product
+      description: người dùng gửi lên danh sách id của sản phẩm trên trang 1688. server trả về thông tin chi tiết các sản phẩm mà người dùng đó tạo theo id được gửi.
+      summary: Xem chi tiết một sản phẩm theo id
+      parameters:
+        - in: query
+          name: linked_product_ids
+          description: id sản phẩm trên trang 1688
+          required: true
+          schema:
+            type: string
+            items:
+              type: string
+              maxItems: 40
+              minItems: 1
+          explode: false
+          style: form
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponsesWithArrayData"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /receipt:
+    get:
+      x-swagger-router-controller: receiptRoute
+      operationId: getReceipt
+      description: get phieu thu
+      tags:
+        - /receipt
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /receipt/{receipt_id}:
+    get:
+      x-swagger-router-controller: receiptRoute
+      operationId: getById
+      tags:
+        - /receipt
+      parameters:
+        - in: path
+          required: true
+          name: receipt_id
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /export/create:
+    post:
+      x-swagger-router-controller: exportRoute
+      operationId: createExport
+      tags:
+        - /export
+      description: Phiếu xuất
+      summary: Phiếu xuất
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              type: array
+              uniqueItems: true
+              items:
+                type: object
+                properties:
+                  order_sn:
+                    type: string
+                    description: Mã đơn
+                  shipping_traceno:
+                    type: string
+                    description: Mã vận đơn
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /export/get-by-status:
+    get:
+      x-swagger-router-controller: exportRoute
+      operationId: :getByStatus
+      description: get export by status
+      summary: get export by status
+      tags:
+        - /export
+      parameters:
+        - in: query
+          name: status
+          schema:
+            uniqueItems: true
+            type: string
+            items:
+              type: number
+          allowEmptyValue: false
+          required: true
+          explode: true
+          style: form
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /export/{export_id}:
+    get:
+      x-swagger-router-controller: exportRoute
+      operationId: getByIdExport
+      tags:
+        - /export
+      parameters:
+        - in: path
+          required: true
+          name: export_id
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /export/update:
+    put:
+      x-swagger-router-controller: exportRoute
+      operationId: updateExport
+      description: Cập nhật trạng thái phiếu xuất
+      summary: Cập nhật trạng thái phiếu xuất
+      tags:
+        - /export
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - data
+                - export_id
+              properties:
+                export_id:
+                  type: string
+                data:
+                  type: object
+                  minProperties: 1
+                  properties:
+                    gomdon_status:
+                      type: number
+                      enum:
+                        - 1
+                        - 2
+                        - 3
+                        - 4
+      responses:
+        "200":
+          description: OK
+  /export/add-snapshot:
+    post:
+      x-swagger-router-controller: exportRoute
+      operationId: addSnapshotExport
+      description: Thêm snapshot export
+      summary: Thêm snapshot export
+      tags:
+        - /export
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image, export_id]
+              properties:
+                image:
+                  type: string
+                  format: binary
+                export_id:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: error
+  /sell/create-receipt:
+    post:
+      x-swagger-router-controller: sellRoute
+      operationId: createReceipt
+      description: Taọ phiếu thu và cập nhật trạng thái thanh toán
+      summary: Đối soát
+      tags:
+        - /sell
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SellCreateReceipt"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /sell/reconciliation:
+    put:
+      x-swagger-router-controller: sellRoute
+      operationId: paymentCheckSell
+      description: Đối soát đơn bán với shopee
+      summary: Đối soát
+      tags:
+        - /sell
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              minItems: 1
+              uniqueItems: true
+              items:
+                $ref: "#/components/schemas/SellPaidCheck"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponsesWithArrayData"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /sell/get-owe-sells:
+    get:
+      x-swagger-router-controller: sellRoute
+      operationId: getOweSells
+      tags:
+        - /sell
+      parameters:
+        - in: query
+          name: field
+          schema:
+            type: string
+            items:
+              type: string
+          allowEmptyValue: true
+          style: form
+          explode: false
+      description: get owe sells
+      summary: get owe sells
+      responses:
+        "200":
+          description: OK
+        #   content:
+        #     application/json:
+        #       schema:
+        #         $ref: "#/components/schemas/Responses"
+        # "500":
+        #   description: error
+        #   content:
+        #     application/json:
+        #       schema:
+        #         $ref: "#/components/schemas/Responses"
+  /sell/get-by-status:
+    get:
+      x-swagger-router-controller: sellRoute
+      operationId: getByStatus
+      description: get sell by shop_id and status
+      summary: get sell by shop_id and status
+      tags:
+        - /sell
+      parameters:
+        - in: query
+          name: status
+          schema:
+            uniqueItems: true
+            type: string
+            items:
+              type: number
+          allowEmptyValue: false
+          required: true
+          style: form
+          explode: false
+        - in: query
+          name: shop_id
+          schema:
+            type: number
+          allowEmptyValue: false
+          # required: true
+        - in: query
+          name: field
+          schema:
+            type: string
+            items:
+              type: string
+          allowEmptyValue: true
+          style: form
+          explode: false
+      responses:
+        "200":
+          description: OK
+          # content:
+          #   application/json:
+          #     schema:
+          #       $ref: "#/components/schemas/Responses"
+  /sell/update:
+    put:
+      x-swagger-router-controller: sellRoute
+      operationId: updateSell
+      description: update sell
+      summary: update sell
+      tags:
+        - /sell
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/UpdateSell"
+      responses:
+        "200":
+          description: OK
+  /sell/create-single:
+    post:
+      x-swagger-router-controller: sellRoute
+      operationId: createSingle
+      description: create sell
+      summary: update sell
+      tags:
+        - /sell
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Sell"
+      responses:
+        "200":
+          description: OK
+
+  /sell/get-by-ids:
+    get:
+      x-swagger-router-controller: sellRoute
+      operationId: getByIdsSell
+      description: get sell by array id
+      summary: get sell by array id
+      tags:
+        - /sell
+      parameters:
+        - in: query
+          name: ids
+          required: true
+          schema:
+            uniqueItems: true
+            type: string
+            items:
+              type: string
+              maxItems: 40
+              minItems: 1
+          explode: false
+          style: form
+        - in: query
+          name: fields
+          schema:
+            uniqueItems: true
+            type: string
+            items:
+              type: string
+          explode: false
+          style: form
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponsesWithArrayData"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+
+  /sell/backup:
+    post:
+      x-swagger-router-controller: sellRoute
+      operationId: backup
+      tags:
+        - /sell
+      description: create sells
+      summary: create sells
+      responses:
+        "200":
+          description: OK
+  /sell/create:
+    post:
+      x-swagger-router-controller: sellRoute
+      operationId: createSell
+      tags:
+        - /sell
+      description: create sells
+      summary: create sells
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              minItems: 1
+              maxItems: 40
+              items:
+                $ref: "#/components/schemas/Sell"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponsesWithArrayData"
+
+  /user/create:
+    post:
+      x-swagger-router-controller: userRoute
+      operationId: createUser
+      tags:
+        - /user
+      description: create user
+      summary: create user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /user/get-all:
+    get:
+      x-swagger-router-controller: userRoute
+      operationId: getAllUser
+      tags:
+        - /user
+      description: get all user
+      summary: get all user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /user/update-role:
+    put:
+      x-swagger-router-controller: userRoute
+      operationId: updateRole
+      tags:
+        - /user
+      description: update role
+      summary: update role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uid:
+                  type: string
+                role:
+                  enum:
+                    - quanlykho
+                    - CTVban
+                    - nguoimoi
+                  type: string
+              required:
+                - uid
+                - role
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /user/get-ctv:
+    get:
+      x-swagger-router-controller: userRoute
+      operationId: getCTVs
+      tags:
+        - /user
+      description: "lấy danh sách cộng tác viên"
+      summary: "lấy danh sách cộng tác viên"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+
+  /sell/add-transactions:
+    post:
+      x-swagger-router-controller: sellRoute
+      operationId: addTrans
+      tags:
+        - /sell
+      description: them giao dich cho don
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: ["money_receive"]
+              properties:
+                gomdon_id:
+                  type: string
+                desc:
+                  type: string
+                move_in:
+                  type: string
+                money_receive:
+                  type: number
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+
+  /user/add-ctv:
+    post:
+      x-swagger-router-controller: userRoute
+      operationId: addCTV
+      tags:
+        - /user
+      description: quản lý cộng tác viên thêm một cộng tác viên mới
+      summary: quản lý cộng tác viên thêm một cộng tác viên mới
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: ["email"]
+              properties:
+                email:
+                  nullable: false
+                  type: string
+                  format: email
+                detailRole:
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+  /user/add-quanlyctv:
+    post:
+      x-swagger-router-controller: userRoute
+      operationId: addQuanlyCTV
+      tags:
+        - /user
+      description: quản lý kho thêm quản lý CTV
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: ["email"]
+              properties:
+                email:
+                  nullable: false
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+
+  /user/transfer-to-wallet:
+    post:
+      x-swagger-router-controller: userRoute
+      operationId: transferToWallet
+      tags:
+        - /user
+      description: yeu cau chuyển tiền cho cộng tác viên
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: ["desc", "money"]
+              properties:
+                desc:
+                  type: string
+                money:
+                  type: number
+                  minimum: 1000
+      responses:
+        "200":
+          description: OK
+  /user/approve-trans:
+    put:
+      x-swagger-router-controller: userRoute
+      operationId: approveTrans
+      tags:
+        - /user
+      description: duyet yeu cau chuyển tiền cho cộng tác viên
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: ["gomdon_id", "action"]
+              properties:
+                action:
+                  type: string
+                  enum:
+                    - duyet
+                    - huy
+                gomdon_id:
+                  type: string
+      responses:
+        "200":
+          description: OK
+  /user/delete-ctv/{uid}:
+    delete:
+      x-swagger-router-controller: userRoute
+      operationId: deleteCTV
+      tags:
+        - /user
+      description: quản lý cộng tác viên sửa quyền của cộng tác viên
+      parameters:
+        - in: path
+          required: true
+          name: uid
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responses"
+
+servers:
+  - url: /
+components:
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      required: ["email", "displayName", "photoURL", "uid"]
+      properties:
+        email:
+          type: string
+        displayName:
+          type: string
+        photoURL:
+          type: string
+        uid:
+          type: string
+        role:
+          type: string
+          enum:
+            - admin
+            - quanlykho
+            - kiemhang
+            - donghang
+            - CTVban
+            - quanlyCTVban
+            - CTVmua
+            - quanlyCTVmua
+            - nguoimoi
+    Sell:
+      additionalProperties: false
+      required:
+        [
+          "shop_id",
+          "order_id",
+          "order_sn",
+          "order_items",
+          "actual_carrier",
+          "actual_price",
+          "buyer_address_name",
+          "buyer_address_phone",
+          "buyer_paid_amount",
+          "shipping_address",
+          "shipping_traceno",
+          "shipping_fee",
+          "stockUID",
+        ]
+      # "buyer_user",
+      # "gomdon_shop"
+      type: object
+      properties:
+        stockUID:
+          type: string
+          minLength: 10
+        product_rebate_by_shopee:
+          type: number
+        transaction_logs:
+          type: array
+          items:
+            $ref: "#/components/schemas/TransactionLog"
+        create_handle:
+          type: boolean
+        gomdon_shop:
+          type: string
+          description: Ten cua shop
+        gomdon_id:
+          type: string
+          description: Id của document
+        gomdon_ctime:
+          type: number
+        gomdon_note:
+          type: string
+        gomdon_status:
+          type: number
+        gomdon_logs:
+          type: array
+          items:
+            $ref: "#/components/schemas/GomdonLogs"
+        gomdon_snapshots:
+          type: array
+          items:
+            type: string
+        gomdon_export_id:
+          type: string
+          description: link đến gomdon_id của phiếu xuất
+        gomdon_by:
+          type: object
+          properties:
+            CTVban:
+              type: string
+            quanlyCTVban:
+              type: string
+        gomdon_ecom_paid:
+          type: number
+        shipping_method:
+          type: number
+        payment_method:
+          type: number
+        wallet_discount:
+          type: string
+        shop_id:
+          type: number
+        add_on_deal_id:
+          type: number
+        buyer_address_name:
+          type: string
+        seller_due_date:
+          type: number
+        complete_time:
+          type: number
+        actual_shipping_fee:
+          type: string
+        ship_by_date:
+          type: number
+        return_id:
+          type: number
+        checkout_id:
+          type: number
+        voucher_code:
+          type: string
+        rate_comment:
+          type: string
+        total_price:
+          type: string
+        tax_amount:
+          type: string
+        first_item_is_wholesale:
+          type: boolean
+        is_buyercancel_toship:
+          type: boolean
+        list_type:
+          type: number
+        first_item_count:
+          type: number
+        shipping_confirm_time:
+          type: number
+        payby_date:
+          type: number
+        seller_service_fee:
+          type: string
+        status_ext:
+          type: number
+        pay_by_credit_card:
+          type: boolean
+        first_item_return:
+          type: boolean
+        logistics_status:
+          type: number
+        create_time:
+          type: number
+        auto_cancel_3pl_ack_date:
+          type: number
+        price_before_discount:
+          type: string
+        order_ratable:
+          type: boolean
+        coins_cash_by_voucher:
+          type: string
+        item_count:
+          type: number
+        shipment_config:
+          type: boolean
+        logistics_channel:
+          type: number
+        coin_used:
+          type: number
+        origin_shipping_fee:
+          type: string
+        actual_price:
+          type: string
+        order_id:
+          type: number
+        pickup_time:
+          type: number
+        voucher_price:
+          type: string
+        trans_detail_shipping_fee:
+          type: string
+        buyer_is_rated:
+          type: number
+        express_channel:
+          type: number
+        logistics_extra_data:
+          type: string
+        dropshipping_info:
+          $ref: "#/components/schemas/DropshippingInfo"
+        remark:
+          type: string
+        buyer_txn_fee:
+          type: string
+        cancel_reason_ext:
+          type: number
+        coin_offset:
+          type: string
+        shipping_proof_status:
+          type: number
+        buyer_address_phone:
+          type: string
+        cancellation_end_date:
+          type: number
+        buyer_paid_amount:
+          type: string
+        ratecancel_by_date:
+          type: number
+        first_item_model:
+          type: string
+        buyer_user:
+          $ref: "#/components/schemas/BuyerUser"
+        estimated_shipping_rebate:
+          type: string
+        instant_buyercancel_toship:
+          type: boolean
+        auto_cancel_arrange_ship_date:
+          type: number
+        is_request_cancellation:
+          type: boolean
+        order_sn:
+          type: string
+        note_mtime:
+          type: number
+        note:
+          type: string
+        delivery_time:
+          type: number
+        pickup_attempts:
+          type: number
+        seller_userid:
+          type: number
+        logistics_flag:
+          type: number
+        voucher_absorbed_by_seller:
+          type: boolean
+        shipping_address:
+          type: string
+        shipping_fee:
+          type: string
+        rate_star:
+          type: number
+        shipping_traceno:
+          type: string
+        pickup_cutoff_time:
+          type: number
+        buyer_last_change_address_time:
+          type: number
+        currency:
+          type: string
+        escrow_release_time:
+          type: number
+        shipping_proof:
+          type: string
+        logid:
+          type: number
+        order_type:
+          type: number
+        paid_amount:
+          type: string
+        credit_card_promotion_discount:
+          type: string
+        carrier_shipping_fee:
+          type: number
+        rate_by_date:
+          type: number
+        credit_card_number:
+          type: string
+        shipping_fee_discount:
+          type: number
+        card_txn_fee_info:
+          $ref: "#/components/schemas/CardTxnFeeInfo"
+        status:
+          type: number
+        first_item_name:
+          type: string
+        buyer_cancel_reason:
+          type: number
+        order_items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        actual_carrier:
+          type: string
+        shipping_rebate:
+          type: string
+        used_voucher:
+          type: number
+        seller_address_id:
+          type: number
+        cancel_userid:
+          type: number
+        user_id:
+          type: number
+        seller_address:
+          $ref: "#/components/schemas/SellerAddress"
+        coins_by_voucher:
+          type: number
+        arrange_pickup_by_date:
+          type: number
+        pay_by_wallet:
+          type: boolean
+        comm_fee:
+          type: string
+    DropshippingInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        phone_number:
+          type: number
+        enabled:
+          type: number
+        name:
+          type: string
+    BuyerUser:
+      additionalProperties: false
+      required: ["user_id", "shop_id"]
+      properties:
+        phone_public:
+          type: boolean
+        buyer_rating:
+          type: number
+        user_id:
+          type: number
+        language:
+          type: string
+        hide_likes:
+          type: number
+        rating_star:
+          type: number
+        cb_option:
+          type: number
+        followed:
+          type: boolean
+        ext_info:
+          $ref: "#/components/schemas/OrderItem"
+        phone:
+          type: string
+        rating_count:
+          type: array
+          items:
+            type: number
+        delivery_order_count:
+          type: number
+        shop_id:
+          type: number
+        portrait:
+          type: string
+        delivery_succ_count:
+          type: number
+        password:
+          type: string
+        user_name:
+          type: string
+        email:
+          type: string
+    CardTxnFeeInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        card_txn_fee:
+          type: string
+        rule_id:
+          type: number
+    OrderItem:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          "product",
+          "item_price",
+          "amount",
+          "order_price",
+          "item_id",
+          "item_model",
+          "model_id",
+        ]
+      properties:
+        gomdon_sell_id:
+          type: string
+          description: link đến gomdon_id của bảng Sell
+        status:
+          type: number
+        is_add_on_sub_item:
+          type: boolean
+        product:
+          $ref: "#/components/schemas/ProductSell"
+        item_price:
+          type: string
+        bundle_deal_product:
+          type: array
+          items:
+            type: string
+        bundle_deal_id:
+          type: number
+        is_wholesale:
+          type: boolean
+        comm_fee_rate:
+          type: string
+        bundle_deal:
+          type: number
+        amount:
+          type: number
+        shop_id:
+          type: number
+        bundle_deal_model:
+          type: array
+          items:
+            type: string
+        order_price:
+          type: string
+        snapshot_id:
+          type: number
+        item_id:
+          type: number
+        item_model:
+          $ref: "#/components/schemas/ItemModel"
+        add_on_deal_id:
+          type: number
+        group_id:
+          type: number
+        item_list:
+          type: array
+          items:
+            type: string
+        model_id:
+          type: number
+        price_before_bundle:
+          type: string
+    SellerAddress:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: number
+        city:
+          type: string
+        address_id:
+          type: number
+        user_id:
+          type: number
+        name:
+          type: string
+        district:
+          type: string
+        country:
+          type: string
+        town:
+          type: string
+        mtime:
+          type: number
+        logistics_status:
+          type: number
+        full_address:
+          type: string
+        ext_info:
+          $ref: "#/components/schemas/SellerAddressEXTInfo"
+        phone:
+          type: string
+        state:
+          type: string
+        def_time:
+          type: number
+        address:
+          type: string
+        icno:
+          type: string
+        zip_code:
+          type: string
+        ctime:
+          type: number
+    ProductSell:
+      type: object
+      additionalProperties: false
+      required: ["images", "name", "item_id", "sku"]
+      properties:
+        cmt_count:
+          type: number
+        cat_id:
+          type: number
+        currency:
+          type: string
+        shop_id:
+          type: number
+        snapshot_id:
+          type: number
+        images:
+          type: array
+          items:
+            type: string
+        price_before_discount:
+          type: string
+        estimated_days:
+          type: number
+        sku:
+          type: string
+        liked_count:
+          type: number
+        branch:
+          type: string
+        price:
+          type: string
+        stock:
+          type: number
+        status:
+          type: number
+        description:
+          type: string
+        brand:
+          type: string
+        sold:
+          type: number
+        item_id:
+          type: number
+        condition:
+          type: number
+        ctime:
+          type: number
+        name:
+          type: string
+        is_pre_order:
+          type: boolean
+    ItemModel:
+      type: object
+      additionalProperties: false
+      required: ["model_id", "name", "price", "item_id", "sku"]
+      properties:
+        status:
+          type: number
+        model_id:
+          type: number
+        name:
+          type: string
+        price:
+          type: string
+        ctime:
+          type: number
+        currency:
+          type: string
+        sku:
+          type: string
+          description: sku được lấy ở phân loại sản phẩn trang shopee. sku này được link đến gomdon_sku của sản phẩm. Dựa vào sku này để trừ tồn kho trong bảng BuyModel
+        mtime:
+          type: number
+        item_id:
+          type: number
+        promotion_id:
+          type: number
+        price_before_discount:
+          type: string
+        rebate_price:
+          type: string
+        sold:
+          type: number
+        stock:
+          type: number
+    SellerAddressEXTInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        geo_info:
+          type: string
+    TransactionLog:
+      type: object
+      properties:
+        desc:
+          type: string
+        move_in:
+          type: number
+        name:
+          type: string
+        gomdon_ctime:
+          type: number
+        money_receive:
+          type: number
+        balance:
+          type: number
+        uid:
+          type: string
+        receiptId:
+          type: string
+    GomdonLogs:
+      type: object
+      required: ["content", "id", "name", "type", "uid"]
+      properties:
+        content:
+          type: string
+        id:
+          type: number
+        name:
+          type: string
+        type:
+          type: number
+        uid:
+          type: string
+    SellPaidCheck:
+      type: object
+      additionalProperties: false
+      required: [paid, id]
+      properties:
+        date:
+          type: string
+          description: thời gian shopee chuyển tiền
+        paid:
+          type: number
+          description: Tiền shopee chuyển vào ví
+        move_in:
+          type: string
+          description: Tiền vận chuyển đến ví shopee hay thẻ ngân hàng
+        id:
+          type: string
+          description: Trường order_sn trong bảng sell
+        balance:
+          type: number
+          description: số dư của ví shopee
+        desc:
+          type: string
+    SellCreateReceipt:
+      type: object
+      additionalProperties: false
+      required: [bank, orders]
+      properties:
+        bank:
+          type: string
+        gomdon_ctime:
+          type: number
+          description: Ngày tiền về ví
+        note:
+          type: string
+        my_money:
+          type: number
+        ecom_paid:
+          type: number
+        orders:
+          type: array
+          uniqueItems: true
+          minItems: 1
+          items:
+            type: object
+            properties:
+              transaction_logs:
+                type: array
+                uniqueItems: true
+                items:
+                  type: object
+                  properties:
+                    receiptId:
+                      type: string
+                      description: mã phiếu thu tiền
+                    uid:
+                      type: string
+                    name:
+                      type: string
+                    money_receive:
+                      type: number
+                      description: số tiền nhận được
+                    date_receive:
+                      type: string
+              gomdon_ecom_paid:
+                type: number
+                description: Số tiền đã nhận trước đó
+              order_sn:
+                type: string
+                description: Mã đơn hàng
+              paid:
+                type: number
+                description: Số tiền sàn trả
+              offset:
+                type: number
+                description: Chênh lệch
+              move_in:
+                type: string
+              desc:
+                type: string
+              date_receive:
+                type: string
+    Product:
+      description: Dữ liệu chuẩn của bảng Product
+      type: object
+      additionalProperties: false
+      # required:
+      #   [
+      #     classify,
+      #     gomdon_product_name,
+      #     linked_product_id,
+      #     linked_company_name,
+      #     images_preview,
+      #   ]
+      properties:
+        gomdon_by:
+          type: string
+        classify:
+          description: mảng các phân loại của sản phẩm
+          type: array
+          uniqueItems: true
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/ProductClassify"
+        gomdon_ctime:
+          type: number
+        gomdon_product_name:
+          type: string
+          description: Tên tiếng việt của sản phẩm
+        images_preview:
+          type: string
+        linked_company_name:
+          type: string
+          description: Tên nhà bán trên 1688
+        linked_product_id:
+          type: string
+          description: Id của sản phẩm trên trang 1688
+        gomdon_id:
+          type: string
+        gomdon_sku:
+          type: string
+        name_china:
+          type: string
+          description: Tên trung quốc của sản phẩm (lấy trên 1688)
+    ProductUpdate:
+      description: Model này dùng để validate product khi gửi lên để update
+      required: [gomdon_id, data]
+      additionalProperties: false
+      properties:
+        gomdon_id:
+          type: string
+        data:
+          type: object
+          additionalProperties: false
+          minItems: 1
+          properties:
+            classify:
+              type: array
+              uniqueItems: true
+              minItems: 1
+              items:
+                $ref: "#/components/schemas/ProductClassify"
+            gomdon_product_name:
+              type: string
+            image_preview:
+              type: string
+    ProductClassify:
+      additionalProperties: false
+      type: object
+      required: [gomdon_name, image]
+      properties:
+        gomdon_name:
+          type: string
+          description: Tên tiếng việt của phân loại
+        gomdon_sku:
+          type: string
+          description: sku này do mình quản lý
+        sku_name:
+          type: string
+          description: tên trung quốc của phân loại lấy trên 1688
+        skuId:
+          type: string
+          description: skuid của phân loại trên 1688
+        image:
+          type: string
+        length:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
+        weight:
+          type: number
+        specId:
+          type: string
+        saleCount:
+          type: number
+        discountPrice:
+          type: number
+        canBookCount:
+          type: number
+    Buy:
+      type: object
+      additionalProperties: false
+      required: [shipping_fee, company_name]
+      properties:
+        gomdon_by:
+          type: object
+          properties:
+            CTVmua:
+              type: string
+            quanlyCTVmua:
+              type: string
+        gomdon_logs:
+          type: array
+          items:
+            $ref: "#/components/schemas/GomdonLogs"
+        gomdon_product_ids:
+          type: array
+          items:
+            type: string
+          description: Mảng các id sản phẩm được lấy trên trang 1688. Mảng này được lấy ra từ BuyModel để biết đơn mua này có mấy sản phẩm và nó là sản phầm gì
+        origin_price:
+          type: number
+          description: Giá phải trả cho nhà bán (Không tính giá phát sinh như phí vận chuyển ...) Được tính từ bảng buyModel
+        product:
+          type: object
+          additionalProperties: false
+          properties:
+            gomdon_product_name:
+              type: string
+            images_preview:
+              type: string
+        models:
+          type: array
+          items:
+            type: object
+          description: Phân loại hàng trong đơn
+        currency:
+          type: string
+          description: Đơn vị tiền tệ (lấy trên 1688)
+        currency_rate:
+          type: number
+          description: Tỉ giá
+        note:
+          type: string
+        shipping_fee:
+          type: number
+          description: Phí ship từ nhà bán bên trung quốc về kho trung gian bên trung quốc(được lấy trên đơn mua 1688)
+        voucher_price:
+          type: number
+          description: Số tiền được giảm (được lấy trên 1688)
+        shipping_traceId:
+          type: array
+          items:
+            type: string
+        status:
+          type: number
+        company_name:
+          type: string
+          description: Tên nhà bán trên 1688
+        gomdon_ctime:
+          type: number
+        gomdon_id:
+          type: string
+          description: Id document do mình quản lý
+        buy_id:
+          type: string
+          description: Id của đơn mua trên 1688
+    BuyModelUpdate:
+      type: object
+      additionalProperties: false
+      required: [gomdon_product_id, gomdon_sku]
+      properties:
+        gomdon_product_id:
+          type: string
+          description: id san pham
+        gomdon_sku:
+          type: string
+        gomdon_name:
+          type: string
+          description: ten phan loai
+        gomdon_buy_id:
+          type: string
+          description: id don nhap
+        actual_quantity:
+          type: number
+          description: thuc nhap
+    BuyModel:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          linked_product_id,
+          gomdon_sku,
+          price,
+          quantity,
+          gomdon_product_id,
+          skuId,
+        ]
+      properties:
+        gomdon_id:
+          type: string
+          description: Id của document do mình quản lý
+        gomdon_buy_id:
+          type: string
+          description: Id của đơn mua (Được liên kết đến trường gomdon_id của bảng Buy)
+        gomdon_status:
+          type: number
+          enum:
+            - 1
+            - 2
+            - 3
+        actual_quantity:
+          type: number
+          description: Số lượng thực tế nhận được
+        linked_product_id:
+          type: string
+          description: Id của sản phẩm trên trang 1688 (Có thể lấy từ bảng sản phẩm)
+        image:
+          type: string
+          description: Lấy từ bảng sản phẩm
+        gomdon_name:
+          type: string
+          description: Tên tiếng việt của phân loại
+        gomdon_sku:
+          type: string
+          description: link đến gomdon_sku của ProductClassify
+        price:
+          type: number
+          description: giá nhập
+        quantity:
+          type: number
+          description: Số lượng của phân loại (lấy trên đơn mua của 1688)
+        height:
+          type: number
+        length:
+          type: number
+        gomdon_product_id:
+          type: string
+          description: link đến gomdon_id của bảng products
+        gomdon_product_name:
+          type: string
+          description: Tên tiếng việt của sản phẩm
+        width:
+          type: number
+        weight:
+          type: number
+        sku_name:
+          type: string
+          description: Tên phân loại trên 1688
+        skuId:
+          type: string
+          description: sku phân loại trên 1688
+        stock:
+          type: number
+          description: Số lượng hàng có trong kho
+    BuyCreate:
+      additionalProperties: false
+      required: [buy, buyModel]
+      properties:
+        buy:
+          $ref: "#/components/schemas/Buy"
+          description: Thông tin chung của đơn nhập. Thông tin này được lưu tại bảng Buys
+        buyModel:
+          type: array
+          description: Thông tin về các phân loại hàng được mua trong đơn nhập. Được lưu tại bảng buy_model. Dữ liệu này được sử dụng để làm bảng kho
+          items:
+            $ref: "#/components/schemas/BuyModel"
+    BuyUpdate:
+      additionalProperties: false
+      required: [gomdon_id, data]
+      properties:
+        buy_model_ids:
+          type: array
+          items:
+            type: object
+            properties:
+              gomdon_id:
+                type: string
+                description: id phan loai hang
+              actual_quantity:
+                type: number
+                description: so luong thuc nhap cua phan loai
+        gomdon_id:
+          type: string
+          description: id document của bảng buys
+        data:
+          type: object
+          minProperties: 1
+          properties:
+            currency_rate:
+              type: number
+              description: Tỉ giá
+            note:
+              type: string
+            shipping_traceId:
+              type: array
+              items:
+                type: string
+            status:
+              type: number
+    UpdateSell:
+      type: object
+      additionalProperties: false
+      required: ["id", "data"]
+      properties:
+        id:
+          type: string
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            gomdon_status:
+              type: number
+            gomdon_note:
+              type: string
+    ExportSell:
+      type: object
+      additionalProperties: false
+      properties:
+        gomdon_logs:
+          type: array
+          items:
+            $ref: "#/components/schemas/GomdonLogs"
+        gomdon_ctime:
+          type: number
+        gomdon_sells:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: object
+                properties:
+                  order_id:
+                    type: number
+                  order_sn:
+                    type: string
+                  shipping_traceno:
+                    type: string
+                  gomdon_status:
+                    type: number
+                  actual_carrier:
+                    type: string
+                  buyer_user:
+                    $ref: "#/components/schemas/BuyerUser"
+        gomdon_status:
+          type: number
+        gomdon_id:
+          type: string
+          description: id của document để quản lý
+    ResponsesWithArrayData:
+      type: array
+      items:
+        type: object
+        required: [id, code, data]
+        properties:
+          id:
+            type: string
+          code:
+            type: string
+            enum:
+              - success
+              - error
+          data:
+            type: object
+    Responses:
+      type: object
+      required:
+        - code
+        - data
+      properties:
+        code:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          oneOf:
+            - type: array
+              items:
+                type: object
+            - type: object
+            - type: string
+security:
+  - Bearer: []

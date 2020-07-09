@@ -1,0 +1,47 @@
+{
+  "name": "functions",
+  "scripts": {
+    "lint": "tslint --project tsconfig.json",
+    "build": "npm run lint && tsc && npm run build:copy",
+    "serve": "npm run build && firebase serve --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "build:copy": "cpx \"src/api/*.yaml\" lib/src/api",
+    "dev": "nodemon --exec ts-node -- ./src/index.ts",
+    "logs": "firebase functions:log",
+    "client": "openapi-generator generate -i src/api/oas-doc.yaml -g typescript-angular -o projects/openapi --additional-properties modelPropertyNaming=original",
+    "model": "java -Dmodels -jar \"F:/openapi-generator-cli.jar\" generate -i src/api/oas-doc.yaml -g typescript-angular -o src --skip-validate-spec --additional-properties modelPropertyNaming=original",
+    "build:openapi": " openapi-generator generate -i https://us-central1-ctvbanhang-a398d.cloudfunctions.net/getOAS -g typescript-angular -o openapi-generator --additional-properties modelPropertyNaming=original"
+  },
+  "engines": {
+    "node": "10"
+  },
+  "main": "lib/src/index.js",
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.5.0",
+    "aws-elasticsearch-connector": "^8.2.0",
+    "aws-sdk": "^2.590.0",
+    "body-parser": "^1.19.0",
+    "busboy": "^0.3.1",
+    "cors": "^2.8.5",
+    "cpx": "^1.5.0",
+    "deep-diff": "^1.0.2",
+    "express": "^4.16.3",
+    "firebase-admin": "^8.6.0",
+    "firebase-functions": "^3.3.0",
+    "js-yaml": "^3.13.1",
+    "oas-tools": "^2.1.7"
+  },
+  "devDependencies": {
+    "@types/busboy": "^0.2.3",
+    "@types/cors": "^2.8.6",
+    "@types/deep-diff": "^1.0.0",
+    "firebase-functions-test": "^0.1.6",
+    "nodemon": "^2.0.1",
+    "ts-node": "^8.5.2",
+    "tslint": "^5.12.0",
+    "typescript": "^3.2.2"
+  },
+  "private": true
+}
