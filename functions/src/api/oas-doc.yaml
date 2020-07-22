@@ -1134,15 +1134,21 @@ components:
           "shipping_address",
           "shipping_traceno",
           "shipping_fee",
-          "stockUID",
+          "stock",
         ]
       # "buyer_user",
       # "gomdon_shop"
       type: object
       properties:
-        stockUID:
-          type: string
-          minLength: 10
+        stock:
+          type: object
+          properties:
+            uid:
+              type: string
+            email:
+              type: string
+            name:
+              type: string
         product_rebate_by_shopee:
           type: number
         transaction_logs:
@@ -1179,7 +1185,9 @@ components:
           properties:
             CTVban:
               type: string
-            quanlyCTVban:
+            email:
+              type: string
+            name:
               type: string
         gomdon_ecom_paid:
           type: number

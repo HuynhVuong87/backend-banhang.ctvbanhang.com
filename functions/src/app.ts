@@ -28,10 +28,13 @@ apps.use(
   cors({
     credentials: true,
     origin: [
+      "chrome-extension://emjcmfdegoedmnonokjjmagmaahmaeck",
+      "chrome-extension://lijfcadcbeooipbbmfnmjnhodajahepm",
+      "ctvbanhang-a398d.web.app",
       "https://banhang.ctvbanhang.com",
       "http://localhost:4200",
       "https://banhang.shopee.vn",
-      "chrome-extension://lijfcadcbeooipbbmfnmjnhodajahepm",
+      "https://gomdon.ctvbanhang.com/",
     ],
   })
 );

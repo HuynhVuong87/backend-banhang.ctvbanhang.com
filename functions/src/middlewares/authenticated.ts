@@ -6,16 +6,11 @@ export async function verifyToken(
   token: string,
   next: Function
 ) {
-  // console.log(req);
   const bearerRegex = /^Bearer\s/;
-  //   console.log("start");
   //   await admin
   //     .auth()
   //     .setCustomUserClaims("4Zc0GAYPsEh7zP9RXVVarFFy10I3", { role: "admin" })
-  //     .catch((err) => console.log("loi", err));
-  //   console.log("4Zc0GAYPsEh7zP9RXVVarFFy10I3");
   if (token && bearerRegex.test(token)) {
-    // console.log("test");
     const newToken = token.replace(bearerRegex, "");
     try {
       const decodedToken: admin.auth.DecodedIdToken = await admin

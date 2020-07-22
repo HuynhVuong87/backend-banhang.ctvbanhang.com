@@ -106,6 +106,7 @@ export async function createSingle(
       .createSingle(req.body, {
         uid: res.locals.uid,
         name: res.locals.name,
+        email: res.locals.email,
       })
       .then((data: any) => res.send(data))
       .catch((err: any) => res.status(500).send({ message: err }));

@@ -40,13 +40,18 @@ export async function addTrans(data: any, uid: string, name: string) {
 
 export async function createSingle(
   sell: any,
-  user: { uid: string; name: string }
+  user: { uid: string; name: string; email: string }
 ) {
   return new Promise(async (r, j) => {
     getDataWithDocument(collectionSell, sell.order_sn)
       .then(async (data) => {
         if (data.code === 404) {
-          const outStock = await minusGoodsInStock(sell, user.uid, user.name);
+          const outStock = await minusGoodsInStock(
+            sell,
+            user.uid,
+            user.name,
+            user.email
+          );
           r({
             code: "success",
             data: { message: "tạo đơn thành công", outStock },
@@ -250,13 +255,7 @@ export function getByStatus(
     });
   }
   return new Promise((resolve, reject) => {
-    let getData;
-    if (fields) {
-      getData = getDataWithConditions(collectionSell, conditions, fields);
-    } else {
-      getData = getDataWithConditions(collectionSell, conditions);
-    }
-    getData
+    getDataWithConditions(collectionSell, conditions, fields || undefined)
       .then((docs) => resolve({ code: "success", data: docs }))
       .catch((error) => reject({ code: "error", data: { message: error } }));
   });

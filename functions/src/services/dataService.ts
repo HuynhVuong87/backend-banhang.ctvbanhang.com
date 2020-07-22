@@ -135,22 +135,28 @@ export function createReceiptWithBatch(data: any, user: any) {
         name: user.name,
         uid: user.uid,
       },
+      gomdon_ctime: create_milisec(""),
       date_receive: data.gomdon_ctime,
       ecom_paid: data.ecom_paid,
       my_money: data.my_money,
       note: data.note || "",
-      orders: data.orders.map((x: any) => {
-        return {
-          order_sn: x.order_sn,
-          paid: x.paid,
-        };
-      }),
+      // orders: data.orders.map((x: any) => {
+      //   return {
+      // order_sn: x.order_sn,
+      // paid: x.paid,
+      //   };
+      // }),
     });
     batchArray.push(db.batch());
     let batchIndex = 1;
     let count = 0;
     data.orders.forEach((order: any) => {
       const orderRef = db.collection("sells").doc(order.order_sn);
+      const receiptOrder = db
+        .collection("receipts")
+        .doc(receiptRef.id)
+        .collection("orders")
+        .doc(order.order_sn);
       let status = 0;
       switch (true) {
         case order.offset < 0:
@@ -169,11 +175,9 @@ export function createReceiptWithBatch(data: any, user: any) {
         // gomdon_status: status,
         money_receive: order.paid,
         move_in: order.move_in,
-        name: user.name,
         receiptId: receiptRef.id,
-        uid: user.uid,
+        gomdon_ctime: create_milisec("", true),
       });
-      console.log(status);
       const obj: {
         gomdon_ecom_paid: number;
         gomdon_transaction_status: number;
@@ -188,9 +192,13 @@ export function createReceiptWithBatch(data: any, user: any) {
       //     obj.gomdon_status = 9;
       // }
       batchArray[batchIndex].update(orderRef, obj);
-      count++;
+      batchArray[batchIndex].set(receiptOrder, {
+        order_sn: order.order_sn,
+        paid: order.paid,
+      });
+      count += 2;
 
-      if (count === 499) {
+      if (count === 500) {
         batchArray.push(db.batch());
         batchIndex++;
         count = 0;
@@ -343,7 +351,7 @@ export async function deleteStockOfCTV(uid: string, emailStock: string) {
   const userRef = db.collection("users").doc(uid);
   batch.delete(userRef.collection("stocks_info").doc(emailStock));
   batch.update(userRef, {
-    current_stock: "",
+    current_stock: null,
   });
   await batch.commit();
 }
@@ -403,7 +411,12 @@ export function deleteImage(fileName: string) {
   admin.storage().bucket().file(fileName).delete();
 }
 
-export async function minusGoodsInStock(sell: any, uid: string, name: string) {
+export async function minusGoodsInStock(
+  sell: any,
+  uid: string,
+  name: string,
+  email: string
+) {
   const batch = db.batch();
   const items = sell.order_items.filter(
     (x: any) => x.item_model.sku && x.item_model.sku.length > 0
@@ -469,10 +482,12 @@ export async function minusGoodsInStock(sell: any, uid: string, name: string) {
   const user1: {
     CTVban: string;
     name: string;
+    email: string;
     stockUID?: string;
   } = {
     CTVban: uid,
     name,
+    email,
   };
   sell.gomdon_logs = [
     {
@@ -545,4 +560,17 @@ export async function getModelDetailInvoice(original_models: any) {
     i++;
   });
   return original_models;
+}
+
+export async function listOrderInReceipt(id: string) {
+  const data: any[] = [];
+  const docs = await db
+    .collection("receipts")
+    .doc(id)
+    .collection("orders")
+    .get();
+  docs.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
 }

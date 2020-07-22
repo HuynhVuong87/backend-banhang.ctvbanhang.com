@@ -3,7 +3,6 @@ import admin from "../admin";
 import {
   addWallet,
   approveTransSV,
-  createData,
   deleteStockOfCTV,
   getDataAll,
   getDataWithConditions,
@@ -71,13 +70,33 @@ export function createUser(data: any) {
   return new Promise((resolve, reject) => {
     admin
       .auth()
-      .setCustomUserClaims(data.uid, { ctv: true, role: "CTVban" })
-      .then(() => {
-        return createData(
-          collectionName,
-          Object.assign({ current_stock: "", role: "CTVban" }, data),
-          data.uid
+      .setCustomUserClaims(data.uid, { quanlykho: true, role: "quanlykho" })
+      .then(async () => {
+        console.log(data);
+        const userRef = admin.firestore().collection("users").doc(data.uid);
+        await userRef.set(
+          Object.assign(
+            {
+              current_stock: {
+                uid: data.uid,
+                email: data.email,
+                name: data.displayName,
+              },
+              role: "quanlykho",
+              isStock: true,
+            },
+            data
+          )
         );
+        const { displayName, email, photoURL, uid } = data;
+        await userRef.collection("stocks_info").doc(data.email).set({
+          displayName,
+          email,
+          photoURL,
+          uid,
+        });
+        console.log("ok");
+        return;
       })
       .then(() => resolve())
       .catch((err) => reject(err));
@@ -89,7 +108,7 @@ async function rejectStock(stockUID: string) {
   if (info.mess.role === "quanlykho") {
     const list = await getDataWithConditions("users", [
       {
-        field: "current_stock",
+        field: "current_stock.uid",
         opera: "==",
         value: stockUID,
       },
